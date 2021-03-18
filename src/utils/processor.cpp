@@ -12,7 +12,7 @@ Processor::Processor(Memory *memory, uint16_t pc,
     instructionFactory = getBaseInstructionFactory();
 }
 
-int16_t Processor::getAccumulator() {
+int16_t Processor::getAccumulator() const {
     return accumulator;
 }
 
@@ -24,7 +24,7 @@ Memory *Processor::getMemory() {
     return memory;
 }
 
-void Processor::cycle() {
+std::string Processor::cycle() {
     try {
         if (halted)
             throw ProcessorHaltedException(std::to_string(programCounter));
@@ -39,27 +39,31 @@ void Processor::cycle() {
 
         instruction->process();
     } catch (IOInterrupt &ioInterrupt){
-        executeIOOperation(ioInterrupt.getCommand(), ioInterrupt.getAddress());
+        return executeIOOperation(ioInterrupt.getCommand(),
+                                  ioInterrupt.getAddress());
     } catch (MemoryOutOfRangeException &exception) {
         halted = true;
         throw exception;
     } catch (HaltProcessorInterrupt &e){
         halted = true;
     }
+    return "";
 }
 
-void Processor::executeIOOperation(char command, uint16_t ioAddr) {
+std::string Processor::executeIOOperation(char command, uint16_t ioAddr) {
     if (command == 'i')
         getInput(ioAddr);
     else if (command == 'o')
-        showOutput(ioAddr);
+        return showOutput(ioAddr);
+    return "";
 }
 
-void Processor::showOutput(uint16_t sourceAddr) {
+std::string Processor::showOutput(uint16_t sourceAddr) {
     try {
-        std::string line = std::to_string(
-                (*memory)[sourceAddr]);
+        std::string line = std::to_string((*memory)[sourceAddr]);
         *output << line << std::endl;
+
+        return line+"\n";
     } catch (MemoryOutOfRangeException &exception) {
         halted = true;
         throw exception;

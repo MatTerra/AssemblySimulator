@@ -199,6 +199,17 @@ TEST(Processor, output_should_read_from_memory_into_stream){
     ASSERT_EQ("9\n", output.str());
 }
 
+TEST(Processor, output_should_return_from_memory){
+    auto mem = new Memory();
+    (*mem)[0]=13;
+    (*mem)[1]=2;
+    (*mem)[2]=9;
+    std::ostringstream output("");
+    auto processor = new Processor(mem, 0, &std::cin, &output);
+    auto out = processor->cycle();
+    ASSERT_EQ("9\n", out);
+}
+
 TEST(Processor, output_should_throw_memory_out_of_range){
     auto mem = new Memory(2);
     (*mem)[0]=13;

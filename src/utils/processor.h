@@ -23,11 +23,11 @@ public:
     explicit Processor(Memory *memory, uint16_t pc=0,
                        std::istream *input=&std::cin,
                        std::ostream *output=&std::cout);
-    int16_t getAccumulator();
+    int16_t getAccumulator() const;
     uint16_t getProgramCounter() const;
     Memory *getMemory();
 
-    void cycle();
+    std::string cycle();
 
     bool isHalted() const;
 
@@ -40,8 +40,8 @@ private:
     std::istream *input;
     std::ostream *output;
     void getInput(uint16_t destAddr);
-    void showOutput(uint16_t);
-    void executeIOOperation(char command, uint16_t ioAddr);
+    std::string showOutput(uint16_t);
+    std::string executeIOOperation(char command, uint16_t ioAddr);
 };
 
 

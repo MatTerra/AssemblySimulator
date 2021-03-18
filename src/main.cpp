@@ -28,13 +28,16 @@ int main(int argc, char **argv){
         return 1;
     }
 
+    std::ofstream output;
+    output.open(filename.substr(0, filename.find_last_of('.'))+".out") ;
+
     auto loader = new Loader(readFile(filename));
     auto memory = new Memory();
 
     uint16_t PC;
     PC = loader->load(memory);
 
-    auto processor = new Processor(memory, PC);
+    auto processor = new Processor(memory, PC, &std::cin, &output);
 
     executeProgram(processor);
 
@@ -42,9 +45,17 @@ int main(int argc, char **argv){
 }
 
 void executeProgram(Processor *processor) {
+    std::string output;
     while (!processor->isHalted()) {
-        processor->cycle();
-        showExecutionInformation(processor);
+        try {
+            output = processor->cycle();
+            showExecutionInformation(processor);
+            if (output != "")
+                std::cout << "OUTPUT: " << output;
+        } catch (std::exception) {
+            std::cerr << "Algo deu errado ao processar o arquivo!"
+                << "\nEncerrando a execução!" << std::endl;
+        }
     }
 }
 
