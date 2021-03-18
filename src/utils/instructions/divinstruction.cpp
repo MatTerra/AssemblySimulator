@@ -1,0 +1,20 @@
+//
+// Created by mateusberardo on 14/03/2021.
+//
+
+#include "divinstruction.h"
+
+DivInstruction::DivInstruction(uint16_t *pc,
+                               int16_t *accumulator, Memory *memory)
+        : TypeTwoInstruction(pc, accumulator, memory) {
+
+}
+
+void DivInstruction::process() {
+    uint16_t operandAddress = (*memory)[(*pc + 1)];
+    *accumulator /= (*memory)[operandAddress];
+
+    updatePC();
+}
+
+
