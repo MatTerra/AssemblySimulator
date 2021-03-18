@@ -117,13 +117,22 @@ TEST(BaseInstructionFactory_store, may_get_store_instruction){
     ASSERT_NE(nullptr, store);
 }
 
-TEST(BaseInstructionFactory_stop, may_get_input_instruction){
+TEST(BaseInstructionFactory_input, may_get_input_instruction){
     uint16_t pc=0;
     int16_t accumulator=0;
     auto memory = new Memory();
     auto instFactory = getBaseInstructionFactory();
     auto input = instFactory->create(12, &pc, &accumulator, memory);
     ASSERT_NE(nullptr, input);
+}
+
+TEST(BaseInstructionFactory_output, may_get_output_instruction){
+    uint16_t pc=0;
+    int16_t accumulator=0;
+    auto memory = new Memory();
+    auto instFactory = getBaseInstructionFactory();
+    auto output = instFactory->create(13, &pc, &accumulator, memory);
+    ASSERT_NE(nullptr, output);
 }
 
 TEST(BaseInstructionFactory_stop, may_get_stop_instruction){

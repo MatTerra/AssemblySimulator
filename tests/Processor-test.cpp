@@ -187,3 +187,37 @@ TEST(Processor, input_should_halt_if_not_integer){
     }
     ASSERT_TRUE(processor->isHalted());
 }
+
+TEST(Processor, output_should_read_from_memory_into_stream){
+    auto mem = new Memory();
+    (*mem)[0]=13;
+    (*mem)[1]=2;
+    (*mem)[2]=9;
+    std::ostringstream output("");
+    auto processor = new Processor(mem, 0, &std::cin, &output);
+    processor->cycle();
+    ASSERT_EQ("9\n", output.str());
+}
+
+TEST(Processor, output_should_throw_memory_out_of_range){
+    auto mem = new Memory(2);
+    (*mem)[0]=13;
+    (*mem)[1]=2;
+    std::ostringstream output("");
+    auto processor = new Processor(mem, 0, &std::cin, &output);
+    ASSERT_THROW(processor->cycle(), std::exception);
+}
+
+TEST(Processor, output_should_halt_if_out_of_range){
+    auto mem = new Memory(2);
+    (*mem)[0]=13;
+    (*mem)[1]=2;
+    std::ostringstream output("");
+    auto processor = new Processor(mem, 0, &std::cin, &output);
+    try {
+        processor->cycle();
+    } catch (std::exception) {
+        //ignore
+    }
+    ASSERT_TRUE(processor->isHalted());
+}

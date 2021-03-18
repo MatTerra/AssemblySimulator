@@ -39,6 +39,9 @@ private:
     bool halted;
     std::istream *input;
     std::ostream *output;
+    void getInput(uint16_t destAddr);
+    void showOutput(uint16_t);
+    void executeIOOperation(char command, uint16_t ioAddr);
 };
 
 

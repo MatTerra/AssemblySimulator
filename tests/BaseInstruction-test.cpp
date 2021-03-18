@@ -18,6 +18,7 @@
 #include <interruptions/haltprocessorinterrupt.h>
 #include <instructions/inputinstruction.h>
 #include <interruptions/iointerrupt.h>
+#include <instructions/outputinstruction.h>
 #include "gtest/gtest.h"
 
 TEST(AddInstruction, may_instantiate_add){
@@ -517,6 +518,14 @@ TEST(InputInstruction, should_throw_iointerrupt_with_addr){
     }
 }
 
+TEST(OuptutInstruction, may_instantiate_output){
+    int16_t accumulator = 0;
+    uint16_t pc=0;
+    auto memory = new Memory();
+    auto output = new OutputInstruction(&pc, &accumulator, memory);
+    ASSERT_NE(nullptr, output);
+}
+
 TEST(OutputInstruction, pc_should_move_2){
     int16_t accumulator = 0;
     uint16_t pc=0;
@@ -532,37 +541,37 @@ TEST(OutputInstruction, pc_should_move_2){
     }
     ASSERT_EQ(2, pc);
 }
-//
-//TEST(InputInstruction, should_throw_iointerrupt_with_command_i){
-//    int16_t accumulator = 0;
-//    uint16_t pc=0;
-//    auto memory = new Memory();
-//    (*memory)[0] = 12;
-//    (*memory)[1] = 2;
-//    (*memory)[2] = 0;
-//    auto input = new InputInstruction(&pc, &accumulator, memory);
-//    ASSERT_THROW(input->process(), IOInterrupt);
-//    try {
-//        input->process();
-//    } catch (IOInterrupt &interrupt) {
-//        ASSERT_EQ('i', interrupt.getCommand());
-//    }
-//}
-//
-//TEST(InputInstruction, should_throw_iointerrupt_with_addr){
-//    int16_t accumulator = 0;
-//    uint16_t pc=0;
-//    auto memory = new Memory();
-//    (*memory)[0] = 12;
-//    (*memory)[1] = 2;
-//    (*memory)[2] = 0;
-//    auto input = new InputInstruction(&pc, &accumulator, memory);
-//    try {
-//        input->process();
-//    } catch (IOInterrupt &interrupt) {
-//        ASSERT_EQ(2, interrupt.getAddress());
-//    }
-//}
+
+TEST(OutputInstruction, should_throw_iointerrupt_with_command_o){
+    int16_t accumulator = 0;
+    uint16_t pc=0;
+    auto memory = new Memory();
+    (*memory)[0] = 13;
+    (*memory)[1] = 2;
+    (*memory)[2] = 0;
+    auto output = new OutputInstruction(&pc, &accumulator, memory);
+    ASSERT_THROW(output->process(), IOInterrupt);
+    try {
+        output->process();
+    } catch (IOInterrupt &interrupt) {
+        ASSERT_EQ('o', interrupt.getCommand());
+    }
+}
+
+TEST(OutputInstruction, should_throw_iointerrupt_with_addr){
+    int16_t accumulator = 0;
+    uint16_t pc=0;
+    auto memory = new Memory();
+    (*memory)[0] = 13;
+    (*memory)[1] = 2;
+    (*memory)[2] = 0;
+    auto output = new OutputInstruction(&pc, &accumulator, memory);
+    try {
+        output->process();
+    } catch (IOInterrupt &interrupt) {
+        ASSERT_EQ(2, interrupt.getAddress());
+    }
+}
 
 TEST(StopInstruction, may_instantiate_stop){
     int16_t accumulator = 0;

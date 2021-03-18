@@ -38,26 +38,48 @@ void Processor::cycle() {
         }
 
         instruction->process();
+    } catch (IOInterrupt &ioInterrupt){
+        executeIOOperation(ioInterrupt.getCommand(), ioInterrupt.getAddress());
     } catch (MemoryOutOfRangeException &exception) {
         halted = true;
         throw exception;
     } catch (HaltProcessorInterrupt &e){
         halted = true;
-    } catch (IOInterrupt &ioInterrupt){
-        std::string line;
-        getline(*input, line);
-        trim(line);
-        if (!std::regex_match(line, std::regex("[0-6]{0,1}[0-9]{0,4}"))) {
-            halted = true;
-            throw std::invalid_argument(line);
-        }
-        int lineValue = std::stoi(line);
-        if (lineValue>=65536) {
-            halted = true;
-            throw std::invalid_argument(std::to_string(lineValue));
-        }
-        (*memory)[ioInterrupt.getAddress()] = (int16_t) lineValue;
     }
+}
+
+void Processor::executeIOOperation(char command, uint16_t ioAddr) {
+    if (command == 'i')
+        getInput(ioAddr);
+    else if (command == 'o')
+        showOutput(ioAddr);
+}
+
+void Processor::showOutput(uint16_t sourceAddr) {
+    try {
+        std::string line = std::to_string(
+                (*memory)[sourceAddr]);
+        *output << line << std::endl;
+    } catch (MemoryOutOfRangeException &exception) {
+        halted = true;
+        throw exception;
+    }
+}
+
+void Processor::getInput(uint16_t destAddr) {
+    std::string line;
+    getline(*input, line);
+    trim(line);
+    if (!std::regex_match(line, std::regex("[0-6]{0,1}[0-9]{0,4}"))) {
+        halted = true;
+        throw std::invalid_argument(line);
+    }
+    int lineValue = std::stoi(line);
+    if (lineValue>=65536) {
+        halted = true;
+        throw std::invalid_argument(std::to_string(lineValue));
+    }
+    (*memory)[destAddr] = (int16_t) lineValue;
 }
 
 bool Processor::isHalted() const {
