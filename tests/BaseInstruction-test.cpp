@@ -15,7 +15,9 @@
 #include <instructions/loadinstruction.h>
 #include <instructions/storeinstruction.h>
 #include <instructions/stopinstruction.h>
-#include <exceptions/haltprocessorexception.h>
+#include <interruptions/haltprocessorinterrupt.h>
+#include <instructions/inputinstruction.h>
+#include <interruptions/iointerrupt.h>
 #include "gtest/gtest.h"
 
 TEST(AddInstruction, may_instantiate_add){
@@ -460,6 +462,108 @@ TEST(StoreInstruction, should_store_from_acc_into_memory){
     ASSERT_EQ(0, (*memory)[3]);
 }
 
+TEST(InputInstruction, may_instantiate_input){
+    int16_t accumulator = 0;
+    uint16_t pc=0;
+    auto memory = new Memory();
+    auto input = new InputInstruction(&pc, &accumulator, memory);
+    ASSERT_NE(nullptr, input);
+}
+
+TEST(InputInstruction, pc_should_move_2){
+    int16_t accumulator = 0;
+    uint16_t pc=0;
+    auto memory = new Memory();
+    (*memory)[0] = 12;
+    (*memory)[1] = 2;
+    (*memory)[2] = 0;
+    auto input = new InputInstruction(&pc, &accumulator, memory);
+    try {
+        input->process();
+    } catch (IOInterrupt &interrupt) {
+
+    }
+    ASSERT_EQ(2, pc);
+}
+
+TEST(InputInstruction, should_throw_iointerrupt_with_command_i){
+    int16_t accumulator = 0;
+    uint16_t pc=0;
+    auto memory = new Memory();
+    (*memory)[0] = 12;
+    (*memory)[1] = 2;
+    (*memory)[2] = 0;
+    auto input = new InputInstruction(&pc, &accumulator, memory);
+    ASSERT_THROW(input->process(), IOInterrupt);
+    try {
+        input->process();
+    } catch (IOInterrupt &interrupt) {
+        ASSERT_EQ('i', interrupt.getCommand());
+    }
+}
+
+TEST(InputInstruction, should_throw_iointerrupt_with_addr){
+    int16_t accumulator = 0;
+    uint16_t pc=0;
+    auto memory = new Memory();
+    (*memory)[0] = 12;
+    (*memory)[1] = 2;
+    (*memory)[2] = 0;
+    auto input = new InputInstruction(&pc, &accumulator, memory);
+    try {
+        input->process();
+    } catch (IOInterrupt &interrupt) {
+        ASSERT_EQ(2, interrupt.getAddress());
+    }
+}
+
+TEST(OutputInstruction, pc_should_move_2){
+    int16_t accumulator = 0;
+    uint16_t pc=0;
+    auto memory = new Memory();
+    (*memory)[0] = 13;
+    (*memory)[1] = 2;
+    (*memory)[2] = 5;
+    auto output = new OutputInstruction(&pc, &accumulator, memory);
+    try {
+        output->process();
+    } catch (IOInterrupt &interrupt) {
+
+    }
+    ASSERT_EQ(2, pc);
+}
+//
+//TEST(InputInstruction, should_throw_iointerrupt_with_command_i){
+//    int16_t accumulator = 0;
+//    uint16_t pc=0;
+//    auto memory = new Memory();
+//    (*memory)[0] = 12;
+//    (*memory)[1] = 2;
+//    (*memory)[2] = 0;
+//    auto input = new InputInstruction(&pc, &accumulator, memory);
+//    ASSERT_THROW(input->process(), IOInterrupt);
+//    try {
+//        input->process();
+//    } catch (IOInterrupt &interrupt) {
+//        ASSERT_EQ('i', interrupt.getCommand());
+//    }
+//}
+//
+//TEST(InputInstruction, should_throw_iointerrupt_with_addr){
+//    int16_t accumulator = 0;
+//    uint16_t pc=0;
+//    auto memory = new Memory();
+//    (*memory)[0] = 12;
+//    (*memory)[1] = 2;
+//    (*memory)[2] = 0;
+//    auto input = new InputInstruction(&pc, &accumulator, memory);
+//    try {
+//        input->process();
+//    } catch (IOInterrupt &interrupt) {
+//        ASSERT_EQ(2, interrupt.getAddress());
+//    }
+//}
+
 TEST(StopInstruction, may_instantiate_stop){
     int16_t accumulator = 0;
     uint16_t pc=0;
@@ -476,7 +580,7 @@ TEST(StopInstruction, pc_shouldnt_move){
     auto stop = new StopInstruction(&pc, &acc, memory);
     try {
         stop->process();
-    } catch (HaltProcessorException &e) {
+    } catch (HaltProcessorInterrupt &e) {
         //ignore
     }
     ASSERT_EQ(0, pc);
@@ -488,5 +592,5 @@ TEST(StopInstruction, should_thrown_halt_processor_exception){
     auto memory = new Memory();
     (*memory)[0]=14;
     auto stop = new StopInstruction(&pc, &acc, memory);
-    ASSERT_THROW(stop->process(), HaltProcessorException);
+    ASSERT_THROW(stop->process(), HaltProcessorInterrupt);
 }

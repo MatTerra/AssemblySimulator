@@ -5,16 +5,24 @@
 #ifndef SIMULADOR_PROCESSOR_H
 #define SIMULADOR_PROCESSOR_H
 
-
+#include <iostream>
+#include <regex>
 #include <uniwidth.h>
 #include <instructions/baseinstruction.h>
+#include <exceptions/invalidopcodeexception.h>
+#include <exceptions/processorhaltedexception.h>
+#include <exceptions/memoryoutofrangeexception.h>
+#include <interruptions/iointerrupt.h>
 #include "memory.h"
 #include "baseinstructionfactory.h"
+#include "stringutils.h"
 
 class Processor {
 
 public:
-    explicit Processor(Memory *memory, uint16_t pc=0);
+    explicit Processor(Memory *memory, uint16_t pc=0,
+                       std::istream *input=&std::cin,
+                       std::ostream *output=&std::cout);
     int16_t getAccumulator();
     uint16_t getProgramCounter() const;
     Memory *getMemory();
@@ -29,6 +37,8 @@ private:
     int16_t accumulator;
     BaseInstructionFactory<BaseInstruction> *instructionFactory;
     bool halted;
+    std::istream *input;
+    std::ostream *output;
 };
 
 

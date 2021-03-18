@@ -22,7 +22,7 @@
 #include <instructions/copyinstruction.h>
 #include <instructions/loadinstruction.h>
 #include <instructions/storeinstruction.h>
-//#include <instructions/inputinstruction.h>
+#include <instructions/inputinstruction.h>
 //#include <instructions/outputinstruction.h>
 #include <instructions/stopinstruction.h>
 
@@ -72,7 +72,7 @@ static BaseInstructionFactory<BaseInstruction> *getBaseInstructionFactory(){
     instFactory->registerType<CopyInstruction>(9);
     instFactory->registerType<LoadInstruction>(10);
     instFactory->registerType<StoreInstruction>(11);
-//    instFactory->registerType<InputInstruction>(12);
+    instFactory->registerType<InputInstruction>(12);
 //    instFactory->registerType<OutputInstruction>(13);
     instFactory->registerType<StopInstruction>(14);
     return instFactory;

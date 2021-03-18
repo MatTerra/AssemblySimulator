@@ -2,13 +2,13 @@
 // Created by mateusberardo on 13/03/2021.
 //
 
-#include <exceptions/invalidopcodeexception.h>
-#include <exceptions/processorhaltedexception.h>
-#include <exceptions/memoryoutofrangeexception.h>
 #include "processor.h"
 
-Processor::Processor(Memory *memory, uint16_t pc)
-    :memory(memory), programCounter(pc), accumulator(0), halted(false){
+Processor::Processor(Memory *memory, uint16_t pc,
+                     std::istream *input,
+                     std::ostream *output)
+    :memory(memory), programCounter(pc), accumulator(0), halted(false),
+     input(input), output(output){
     instructionFactory = getBaseInstructionFactory();
 }
 
@@ -41,8 +41,22 @@ void Processor::cycle() {
     } catch (MemoryOutOfRangeException &exception) {
         halted = true;
         throw exception;
-    } catch (HaltProcessorException){
+    } catch (HaltProcessorInterrupt &e){
         halted = true;
+    } catch (IOInterrupt &ioInterrupt){
+        std::string line;
+        getline(*input, line);
+        trim(line);
+        if (!std::regex_match(line, std::regex("[0-6]{0,1}[0-9]{0,4}"))) {
+            halted = true;
+            throw std::invalid_argument(line);
+        }
+        int lineValue = std::stoi(line);
+        if (lineValue>=65536) {
+            halted = true;
+            throw std::invalid_argument(std::to_string(lineValue));
+        }
+        (*memory)[ioInterrupt.getAddress()] = (int16_t) lineValue;
     }
 }
 

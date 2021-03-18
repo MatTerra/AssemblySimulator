@@ -126,3 +126,64 @@ TEST(Processor, should_halt_after_memory_out_of_range_exception){
     }
     ASSERT_TRUE(processor->isHalted());
 }
+
+TEST(Processor, input_should_read_from_stream_into_memory){
+    auto mem = new Memory();
+    (*mem)[0]=12;
+    (*mem)[1]=2;
+    (*mem)[2]=0;
+    std::istringstream input("8\n4");
+    auto processor = new Processor(mem, 0, &input);
+    processor->cycle();
+    ASSERT_EQ(8, (*mem)[2]);
+}
+
+TEST(Processor, input_should_throw_error_if_number_greater_than_65536){
+    auto mem = new Memory();
+    (*mem)[0]=12;
+    (*mem)[1]=2;
+    (*mem)[2]=0;
+    std::istringstream input("65536\n");
+    auto processor = new Processor(mem, 0, &input);
+    ASSERT_THROW(processor->cycle(), std::invalid_argument);
+}
+
+TEST(Processor, input_should_throw_error_if_not_integer){
+    auto mem = new Memory();
+    (*mem)[0]=12;
+    (*mem)[1]=2;
+    (*mem)[2]=0;
+    std::istringstream input("65a536\n");
+    auto processor = new Processor(mem, 0, &input);
+    ASSERT_THROW(processor->cycle(), std::invalid_argument);
+}
+
+TEST(Processor, input_should_halt_if_number_greater_than_65536){
+    auto mem = new Memory();
+    (*mem)[0]=12;
+    (*mem)[1]=2;
+    (*mem)[2]=0;
+    std::istringstream input("65536\n");
+    auto processor = new Processor(mem, 0, &input);
+    try {
+        processor->cycle();
+    } catch (std::invalid_argument &arg) {
+        // ignore
+    }
+    ASSERT_TRUE(processor->isHalted());
+}
+
+TEST(Processor, input_should_halt_if_not_integer){
+    auto mem = new Memory();
+    (*mem)[0]=12;
+    (*mem)[1]=2;
+    (*mem)[2]=0;
+    std::istringstream input("65a536\n");
+    auto processor = new Processor(mem, 0, &input);
+    try {
+        processor->cycle();
+    } catch (std::invalid_argument &arg) {
+        // ignore
+    }
+    ASSERT_TRUE(processor->isHalted());
+}

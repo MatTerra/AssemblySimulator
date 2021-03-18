@@ -11,5 +11,5 @@ StopInstruction::StopInstruction(uint16_t *pc,
 }
 
 void StopInstruction::process() {
-    throw HaltProcessorException();
+    throw HaltProcessorInterrupt();
 }

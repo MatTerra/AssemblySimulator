@@ -6,7 +6,7 @@
 #define SIMULADOR_STOPINSTRUCTION_H
 
 #include <memory.h>
-#include <exceptions/haltprocessorexception.h>
+#include <interruptions/haltprocessorinterrupt.h>
 #include "typeoneinstruction.h"
 
 class StopInstruction : public TypeOneInstruction {
