@@ -32,6 +32,7 @@ std::string Processor::cycle() {
         auto opcode = (*memory)[programCounter];
         auto instruction = instructionFactory->create(opcode, &programCounter,
                                                       &accumulator, memory);
+
         if (instruction == nullptr) {
             halted = true;
             throw InvalidOpcodeException(std::to_string(opcode));
@@ -62,7 +63,7 @@ std::string Processor::showOutput(uint16_t sourceAddr) {
     try {
         std::string line = std::to_string((*memory)[sourceAddr]);
         *output << line << std::endl;
-
+        output->flush();
         return line+"\n";
     } catch (MemoryOutOfRangeException &exception) {
         halted = true;
@@ -72,6 +73,7 @@ std::string Processor::showOutput(uint16_t sourceAddr) {
 
 void Processor::getInput(uint16_t destAddr) {
     std::string line;
+    std::cout << "> ";
     getline(*input, line);
     trim(line);
     if (!std::regex_match(line, std::regex("[0-6]{0,1}[0-9]{0,4}"))) {

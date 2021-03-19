@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 
+bool DEBUG = false;
+
 std::string readFile(std::string filename);
 
 void showExecutionInformation(Processor *processor);
@@ -15,9 +17,16 @@ void showExecutionInformation(Processor *processor);
 void executeProgram(Processor *processor);
 
 int main(int argc, char **argv){
-    if (argc != 2) {
+
+    if (argc < 2 || argc > 3) {
         std::cout << "Expected filename as single argument to executable!";
         return 1;
+    }
+    if (argc == 3) {
+        if (std::string(argv[2]) == "-d")
+            DEBUG = true;
+        else
+            std::cout << "Expected only filename or filename -d for debug!";
     }
 
     auto filename = std::string(argv[1]);
@@ -41,6 +50,9 @@ int main(int argc, char **argv){
 
     executeProgram(processor);
 
+    output.flush();
+    output.close();
+
     return 0;
 }
 
@@ -52,6 +64,9 @@ void executeProgram(Processor *processor) {
             showExecutionInformation(processor);
             if (output != "")
                 std::cout << "OUTPUT: " << output;
+            std::cout << std::endl;
+            if (DEBUG)
+                getchar();
         } catch (std::exception) {
             std::cerr << "Algo deu errado ao processar o arquivo!"
                 << "\nEncerrando a execução!" << std::endl;
@@ -62,7 +77,6 @@ void executeProgram(Processor *processor) {
 void showExecutionInformation(Processor *processor) {
     std::cout << "PC <- " << processor->getProgramCounter() << std::endl;
     std::cout << "ACC <- " << processor->getAccumulator() << std::endl;
-    std::cout << std::endl;
 }
 
 std::string readFile(std::string filename) {
