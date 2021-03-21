@@ -581,7 +581,7 @@ TEST(StopInstruction, may_instantiate_stop){
     ASSERT_NE(nullptr, stop);
 }
 
-TEST(StopInstruction, pc_shouldnt_move){
+TEST(StopInstruction, pc_should_move_1){
     uint16_t pc = 0;
     int16_t acc = 0;
     auto memory = new Memory();
@@ -592,7 +592,7 @@ TEST(StopInstruction, pc_shouldnt_move){
     } catch (HaltProcessorInterrupt &e) {
         //ignore
     }
-    ASSERT_EQ(0, pc);
+    ASSERT_EQ(1, pc);
 }
 
 TEST(StopInstruction, should_thrown_halt_processor_exception){
