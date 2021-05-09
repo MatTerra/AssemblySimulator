@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <regex>
-#include <uniwidth.h>
+#include <stdint.h>
 #include <instructions/baseinstruction.h>
 #include <exceptions/invalidopcodeexception.h>
 #include <exceptions/processorhaltedexception.h>

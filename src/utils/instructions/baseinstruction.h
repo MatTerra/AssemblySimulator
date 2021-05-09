@@ -5,7 +5,7 @@
 #ifndef SIMULADOR_BASEINSTRUCTION_H
 #define SIMULADOR_BASEINSTRUCTION_H
 
-#include <uniwidth.h>
+#include <stdint.h>
 #include "memory.h"
 
 class BaseInstruction {

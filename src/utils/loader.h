@@ -8,7 +8,7 @@
 
 #include <string>
 #include <utility>
-#include <uniwidth.h>
+#include <stdint.h>
 #include "memory.h"
 
 class Loader {
