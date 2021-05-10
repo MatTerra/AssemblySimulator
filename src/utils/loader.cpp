@@ -3,11 +3,14 @@
 //
 
 #include "loader.h"
+#include "stringutils.h"
 
 uint16_t Loader::load(Memory *memory, uint16_t startAddr) {
     size_t nextSpace = 0;
     size_t lastSpace = 0;
     uint16_t addr = startAddr;
+
+    trim(memoryContent);
 
     while (nextSpace != std::string::npos) {
         nextSpace = memoryContent.find(' ', lastSpace+1);
